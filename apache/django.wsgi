@@ -1,9 +1,9 @@
 import os
 import sys
 
-path = '/srv/www/dshopping'
+path = '/srv/www/shopping'
 if path not in sys.path:
-   sys.path.insert(0, '/srv/www/dshopping')
+   sys.path.insert(0, '/srv/www/shopping')
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'shopping.settings'
 
