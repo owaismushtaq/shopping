@@ -11,8 +11,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-MEDIA_ROOT = os.path.join(BASE_DIR)
-MEDIA_URL = '/'
 # print MEDIA_ROOT
 # STATIC_ROOT = os.path.join(BASE_DIR,'trialshop/static/media')
 
@@ -66,7 +64,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'shopping',
         'USER': 'root',
-        'PASSWORD': 'owais',
+        'PASSWORD': 'root',
     }
 }
 
@@ -86,6 +84,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR)
 
 STATIC_URL = '/static/'
 
