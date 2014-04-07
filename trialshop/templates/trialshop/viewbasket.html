@@ -124,8 +124,8 @@
 <img src="/static/trialshop/images/creditcards.gif" class="safe" />
 <div class="right">
     <strong>Subtotal before Delivery Charges</strong> <em>RS:{{total}}</em><br />
-    {% comment %}
-    <!-- <form action="/index" method="POST">{% csrf_token %}
+    
+    <form action="/index" method="POST">{% csrf_token %}
                 
                 <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
                     data-key="pk_test_YpmMKIiaE0IBWKDovnxLaBKX"
@@ -134,8 +134,8 @@
                     data-description= '{{ leng }} Product Rs {{ total }}'
                     data-image="{{ STATIC_URL }}trialshop/images/marketplace.png">
                 </script>
-    </form> -->
-    {% endcomment %}
+    </form>
+    
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
     <input type="hidden" name="cmd" value="_xclick">
     <input type="hidden" name="business" value="owaismushtaq-facilitator@gmail.com">
