@@ -68,6 +68,6 @@ class quanti(forms.Form):
         label=("Qunty"),
         max_length=30,
         widget=forms.TextInput(),
-        required=True
+        required=True,initial='1'
     )
 
