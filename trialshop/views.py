@@ -94,7 +94,6 @@ def AddToCart(request,*args,**kwargs):
     else:
         return  HttpResponseRedirect('/login')
             
-
 def CartRemove(request,*args,**kwargs):
     # print kwargs
     if request.user.is_authenticated():
@@ -103,7 +102,11 @@ def CartRemove(request,*args,**kwargs):
         cart_obj= Cart.objects.all()
         for dlt in cart_obj:
             Cart.objects.filter(id=x).delete()
-        return HttpResponseRedirect('/cartbasket')
+            obj=Cart.objects.filter(id=x)
+            if len(obj)<1:
+                return HttpResponseRedirect('/index')
+            else:
+                return HttpResponseRedirect('/cartbasket')
     else:
         return  HttpResponseRedirect('/login')
 
