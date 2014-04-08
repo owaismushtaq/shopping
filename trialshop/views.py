@@ -102,7 +102,7 @@ def CartRemove(request,*args,**kwargs):
         cart_obj= Cart.objects.all()
         for dlt in cart_obj:
             Cart.objects.filter(id=x).delete()
-            obj=Cart.objects.filter(id=x)
+            obj=Cart.objects.filter(user=request.user)
             if len(obj)<1:
                 return HttpResponseRedirect('/index')
             else:
