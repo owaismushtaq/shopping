@@ -47,57 +47,65 @@ class DescView(generic.TemplateView):
 class CartView(generic.TemplateView):
     template_name = 'trialshop/viewbasket.html'
     def get(self,request,*args,**kwargs):
-        cur_usr_cart=Cart.objects.filter(user=request.user)
-        cart_prod=[]
-        cart= Cart.objects.all()
-        prod_obj=Product.objects.all()
-        for c in cur_usr_cart:        
-            for product in prod_obj:
-                if product.product_name == str(c.product_id):
-                    c.pid=product.id
-                    c.product_type=product.product_type
-                    c.product_brand=product.product_brand
-                    c.price=product.product_price
-                    c.product_pic=product.product_pic.url
-                    c.product_detail=product.product_detail
-                    p=product.product_price
-                    x=c.quantity
-                    c.total_val=x*p
-                    c.save()
+        if request.user.is_authenticated():
+            cur_usr_cart=Cart.objects.filter(user=request.user)
+            cart_prod=[]
+            cart= Cart.objects.all()
+            prod_obj=Product.objects.all()
+            for c in cur_usr_cart:        
+                for product in prod_obj:
+                    if product.product_name == str(c.product_id):
+                        c.pid=product.id
+                        c.product_type=product.product_type
+                        c.product_brand=product.product_brand
+                        c.price=product.product_price
+                        c.product_pic=product.product_pic.url
+                        c.product_detail=product.product_detail
+                        p=product.product_price
+                        x=c.quantity
+                        c.total_val=x*p
+                        c.save()
 
-        user=request.user           
-        total=0
-        leng=len(cur_usr_cart)
-        for c in cur_usr_cart:
-            total=total+c.total_val
-        # cart_product_id=[]
-        # for cart in cur_usr_cart:
-            # cart_product_name=str(cart.product_id)
-        catagory_ob=catagory.objects.all()
+            user=request.user           
+            total=0
+            leng=len(cur_usr_cart)
+            for c in cur_usr_cart:
+                total=total+c.total_val
+            # cart_product_id=[]
+            # for cart in cur_usr_cart:
+                # cart_product_name=str(cart.product_id)
+            catagory_ob=catagory.objects.all()
 
-        return self.render_to_response({'user':user,'cur_usr_cart':cur_usr_cart,'total':total,'catagory_ob':catagory_ob,'leng':leng,
-        })
+            return self.render_to_response({'user':user,'cur_usr_cart':cur_usr_cart,'total':total,'catagory_ob':catagory_ob,'leng':leng,
+            })
+        else:
+            return  HttpResponseRedirect('/login')
 
 
 def AddToCart(request,*args,**kwargs):
-    # print kwargs
-    x=kwargs['cart_id']
-    chk_product=Product.objects.get(id=x)
-    if chk_product:
-        x=request.POST['Qunty']
-        p=Cart(user=request.user,product_id=chk_product,quantity=x)
-        p.save()
-    return HttpResponseRedirect('/cartbasket')
-    # productobj=Product.objects.all()
+    if request.user.is_authenticated():
+        x=kwargs['cart_id']
+        chk_product=Product.objects.get(id=x)
+        if chk_product:
+            x=request.POST['Qunty']
+            p=Cart(user=request.user,product_id=chk_product,quantity=x)
+            p.save()
+        return  HttpResponseRedirect('/cartbasket')
+    else:
+        return  HttpResponseRedirect('/login')
+            
 
 def CartRemove(request,*args,**kwargs):
     # print kwargs
-    x=kwargs['cart_id']
-    # print x
-    cart_obj= Cart.objects.all()
-    for dlt in cart_obj:
-        Cart.objects.filter(id=x).delete()
-    return HttpResponseRedirect('/cartbasket')
+    if request.user.is_authenticated():
+        x=kwargs['cart_id']
+        # print x
+        cart_obj= Cart.objects.all()
+        for dlt in cart_obj:
+            Cart.objects.filter(id=x).delete()
+        return HttpResponseRedirect('/cartbasket')
+    else:
+        return  HttpResponseRedirect('/login')
 
 class loginform(generic.TemplateView):
     template_name = 'trialshop/login.html'
@@ -178,30 +186,33 @@ def signup_request(request):
 class charge_payment(generic.TemplateView):
     template_name = 'trialshop/about.html'
     def get(self,request,*args,**kwargs):
-        cur_usr_cart=Cart.objects.filter(user=request.user)
-        total1 =0
-        for c in cur_usr_cart:
-            total1=total1+c.total_val
-        # Set your secret key: remember to change this to your live secret key in production
-        # See your keys here https://manage.stripe.com/account
-        print "helo owais 1"
-        stripe.api_key = "sk_test_NhO6U7lMQIvidV5EDdgKObPT"
+        if request.user.is_authenticated():
+            cur_usr_cart=Cart.objects.filter(user=request.user)
+            total1 =0
+            for c in cur_usr_cart:
+                total1=total1+c.total_val
+            # Set your secret key: remember to change this to your live secret key in production
+            # See your keys here https://manage.stripe.com/account
+            print "helo owais 1"
+            stripe.api_key = "sk_test_NhO6U7lMQIvidV5EDdgKObPT"
 
-        # Get the credit card details submitted by the form
-        token = request.POST['stripeToken']
-        # Create the charge on Stripe's servers - this will charge the user's card
-        try:
-         charge = stripe.Charge.create(
-            amount=total1, # amount in cents, again
-            currency="usd",
-            card=token,
-            description="payinguser@example.com"
-        )
-        except stripe.CardError, e:
-        # The card has been declined
-            pass
+            # Get the credit card details submitted by the form
+            token = request.POST['stripeToken']
+            # Create the charge on Stripe's servers - this will charge the user's card
+            try:
+             charge = stripe.Charge.create(
+                amount=total1, # amount in cents, again
+                currency="usd",
+                card=token,
+                description="payinguser@example.com"
+            )
+            except stripe.CardError, e:
+            # The card has been declined
+                pass
 
-        print "helo owais 4"
-        return self.render_to_response({'user':user,'cur_usr_cart':cur_usr_cart,'total':total,'catagory_ob':catagory_ob,'leng':leng,
-        })
+            print "helo owais 4"
+            return self.render_to_response({'user':user,'cur_usr_cart':cur_usr_cart,'total':total,'catagory_ob':catagory_ob,'leng':leng,
+            })
+        else:
+            return  HttpResponseRedirect('/login')
 

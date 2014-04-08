@@ -3,10 +3,10 @@ from django.conf.urls import patterns,url
 
 urlpatterns=patterns('',
 
-	url(r'^$',views.loginform.as_view(), name='login'),
+	url(r'^$',views.IndexView.as_view(), name='login'),
 		
 	url(r'^signup$',views.signup.as_view(), name='signup'),
-	url(r'^login_request/login$',views.loginform.as_view(), name='index'),
+	url(r'^login$',views.loginform.as_view(), name='index'),
 	url(r'^signup_request/login$',views.signup.as_view(), name='index'),
 	url(r'^index$',views.IndexView.as_view(), name='index'),
 	url(r'^category/(?P<category_id>\d+)/$',views.CategoryView.as_view(),name="category"),
