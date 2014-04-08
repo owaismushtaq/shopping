@@ -24,6 +24,11 @@
                         
                     </ul>
                     <ul>
+                    	{% if user.is_authenticated %}
+                        <li><a href="">Hi ! {{ user.username }}</a></li>
+                        {% else %}
+                        <li><a href="">Hi ! Guest</a></li>
+                        {%endif%}
                     	<li><a href="">Hi ! {{ user.username }}</a></li>
                         <li><a href="/">Home</a></li>
                         <li><a href="about.html">About us</a></li>

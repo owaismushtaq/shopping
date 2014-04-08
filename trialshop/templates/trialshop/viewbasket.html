@@ -24,7 +24,11 @@
                         
                     </ul>
                     <ul>
-                        <li><a href="#">Hi ! {{ user.username }}</a></li>
+                        {% if user.is_authenticated %}
+                        <li><a href="">Hi ! {{ user.username }}</a></li>
+                        {% else %}
+                        <li><a href="">Hi ! Guest</a></li>
+                        {%endif%}
                         <li><a href="/">Home</a></li>
                         <li><a href="/about/">About us</a></li>
                         <li><a href="/cartbasket">My Cart</a></li>
