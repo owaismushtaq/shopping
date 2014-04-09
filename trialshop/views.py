@@ -16,7 +16,12 @@ class IndexView(generic.TemplateView):
     def get(self,request,*args,**kwargs):
         productobj=Product.objects.order_by('-pub_date')
         Pmode=catagory.objects.all()
-        return self.render_to_response({  'pmode' :  Pmode ,   'productobj':productobj ,
+        if request.user.is_authenticated():
+            lencart=len(Cart.objects.filter(user=request.user))
+            return self.render_to_response({ 'lencart':lencart, 'pmode' :  Pmode ,   'productobj':productobj ,
+            })
+        else:
+            return self.render_to_response({'pmode' :  Pmode ,   'productobj':productobj ,
             })
 class CategoryView(generic.TemplateView):
     template_name = 'trialshop/new_arrival.html'
@@ -27,7 +32,8 @@ class CategoryView(generic.TemplateView):
         
         productobj=Product.objects.all()
         Pmode_search=catagory.objects.get(id=kwargs['category_id'])
-        return self.render_to_response({  'pmode' :  Pmode ,   'productobj':productobj ,'Pmode_search' :  Pmode_search ,
+        lencart=len(Cart.objects.filter(user=request.user))
+        return self.render_to_response({ 'lencart':lencart, 'pmode' :  Pmode ,   'productobj':productobj ,'Pmode_search' :  Pmode_search ,
             })
         # print kwargs['category_id']
 class DescView(generic.TemplateView):
@@ -41,9 +47,14 @@ class DescView(generic.TemplateView):
                 cartchk=True
             else:
                 cartchk=False
-        return self.render_to_response({ 'Pmode_search' :  Pmode_search ,'cartchk':cartchk,'catagory_ob':catagory_ob,'quanti':quanti,
+        if request.user.is_authenticated():
+            lencart=len(Cart.objects.filter(user=request.user))
+            return self.render_to_response({ 'lencart': lencart,'Pmode_search' :  Pmode_search ,'cartchk':cartchk,'catagory_ob':catagory_ob,'quanti':quanti,
             })
-
+        else:
+            return self.render_to_response({ 'Pmode_search' :  Pmode_search ,'cartchk':cartchk,'catagory_ob':catagory_ob,'quanti':quanti,
+            })
+            
 class CartView(generic.TemplateView):
     template_name = 'trialshop/viewbasket.html'
     def get(self,request,*args,**kwargs):
@@ -75,8 +86,8 @@ class CartView(generic.TemplateView):
             # for cart in cur_usr_cart:
                 # cart_product_name=str(cart.product_id)
             catagory_ob=catagory.objects.all()
-
-            return self.render_to_response({'user':user,'cur_usr_cart':cur_usr_cart,'total':total,'catagory_ob':catagory_ob,'leng':leng,
+            lencart=len(Cart.objects.filter(user=request.user))
+            return self.render_to_response({'lencart':lencart,'user':user,'cur_usr_cart':cur_usr_cart,'total':total,'catagory_ob':catagory_ob,'leng':leng,
             })
         else:
             return  HttpResponseRedirect('/login')

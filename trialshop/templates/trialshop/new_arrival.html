@@ -31,7 +31,11 @@
                         {%endif%}
                         <li><a href="/">Home</a></li>
                         <li><a href="/about/">About us</a></li>
-                        <li><a href="/cartbasket">My Cart</a></li>
+                        {% if lencart > 0 %}
+                        <li><a href="/cartbasket">My Cart {{ lencart }} </a></li>
+                        {% else %}
+                        	<li><a href="/cartbasket">My Cart</a></li>
+                        {%endif%}
                         {% if user.is_authenticated %}
                         <li><a href="/logout">Logout</a></li>
                         {% else %}
