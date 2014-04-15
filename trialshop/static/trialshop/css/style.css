@@ -345,6 +345,7 @@ p a{
 }
 .body .content{
 	float:left;
+        width:82%;
 }
 .body .content .figure{
 	height:260px;

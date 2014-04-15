@@ -32,7 +32,10 @@ class CategoryView(generic.TemplateView):
         
         productobj=Product.objects.all()
         Pmode_search=catagory.objects.get(id=kwargs['category_id'])
-        lencart=len(Cart.objects.filter(user=request.user))
+        if request.user.is_authenticated():
+            lencart=len(Cart.objects.filter(user=request.user))
+        else:
+            lencart=0
         return self.render_to_response({ 'lencart':lencart, 'pmode' :  Pmode ,   'productobj':productobj ,'Pmode_search' :  Pmode_search ,
             })
         # print kwargs['category_id']
