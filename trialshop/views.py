@@ -9,6 +9,8 @@ from django.views import generic
 from django.template import RequestContext, loader
 from django.contrib.auth import authenticate, login,logout
 import stripe
+from model_mommy import mommy
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 class IndexView(generic.TemplateView):
@@ -45,17 +47,13 @@ class DescView(generic.TemplateView):
         productobj=Product.objects.all()
         Pmode_search=Product.objects.get(id=kwargs['category_id'])
         catagory_ob=catagory.objects.all()
-        for rs in productobj:
-            if rs.cart_value==True:
-                cartchk=True
-            else:
-                cartchk=False
+        
         if request.user.is_authenticated():
             lencart=len(Cart.objects.filter(user=request.user))
-            return self.render_to_response({ 'lencart': lencart,'Pmode_search' :  Pmode_search ,'cartchk':cartchk,'catagory_ob':catagory_ob,'quanti':quanti,
+            return self.render_to_response({ 'lencart': lencart,'Pmode_search' :  Pmode_search ,'catagory_ob':catagory_ob,'quanti':quanti,
             })
         else:
-            return self.render_to_response({ 'Pmode_search' :  Pmode_search ,'cartchk':cartchk,'catagory_ob':catagory_ob,'quanti':quanti,
+            return self.render_to_response({ 'Pmode_search' :  Pmode_search ,'catagory_ob':catagory_ob,'quanti':quanti,
             })
             
 class CartView(generic.TemplateView):
@@ -70,24 +68,16 @@ class CartView(generic.TemplateView):
                 for product in prod_obj:
                     if product.product_name == str(c.product_id):
                         c.pid=product.id
-                        c.product_type=product.product_type
-                        c.product_brand=product.product_brand
                         c.price=product.product_price
-                        c.product_pic=product.product_pic.url
-                        c.product_detail=product.product_detail
                         p=product.product_price
                         x=c.quantity
                         c.total_val=x*p
                         c.save()
-
             user=request.user           
             total=0
             leng=len(cur_usr_cart)
             for c in cur_usr_cart:
                 total=total+c.total_val
-            # cart_product_id=[]
-            # for cart in cur_usr_cart:
-                # cart_product_name=str(cart.product_id)
             catagory_ob=catagory.objects.all()
             lencart=len(Cart.objects.filter(user=request.user))
             return self.render_to_response({'lencart':lencart,'user':user,'cur_usr_cart':cur_usr_cart,'total':total,'catagory_ob':catagory_ob,'leng':leng,
@@ -95,18 +85,18 @@ class CartView(generic.TemplateView):
         else:
             return  HttpResponseRedirect('/login')
 
-
+@login_required()
 def AddToCart(request,*args,**kwargs):
-    if request.user.is_authenticated():
-        x=kwargs['cart_id']
-        chk_product=Product.objects.get(id=x)
-        if chk_product:
-            x=request.POST['Qunty']
-            p=Cart(user=request.user,product_id=chk_product,quantity=x)
-            p.save()
-        return  HttpResponseRedirect('/cartbasket')
-    else:
-        return  HttpResponseRedirect('/login')
+    # if request.user.is_authenticated():
+    x=kwargs['cart_id']
+    chk_product=Product.objects.get(id=x)
+    if chk_product:
+        # x=request.POST['Qunty']
+        p=Cart(user=request.user,product_id=chk_product,quantity=1)
+        p.save()
+    return  HttpResponseRedirect('/cartbasket')
+    # else:
+    # return  HttpResponseRedirect('/login')
             
 def CartRemove(request,*args,**kwargs):
     # print kwargs
@@ -128,10 +118,11 @@ class loginform(generic.TemplateView):
     template_name = 'trialshop/login.html'
 
     def get(self,request,*args,**kwargs):
+        next=request.GET.get('next')
         if request.user.is_authenticated():
             return  HttpResponseRedirect('/index')
         else:
-            return self.render_to_response({'LoginForm':LoginForm,
+            return self.render_to_response({'LoginForm':LoginForm,'next':next,
             })
 
 
@@ -139,10 +130,16 @@ def login_request(request):
         form = LoginForm(request.POST) 
         username = request.POST['username']
         password = request.POST['password']
+        next=request.POST.get('next',None)
         user = authenticate(username=username, password=password)
+        # print request.GET,"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",request.GET.get('next')
+
         if user is not None:
             if user.is_active:
                 login(request, user)
+                if next:
+                    return HttpResponseRedirect(next)
+
                 return HttpResponseRedirect('/index')
             else:
                 form = LoginForm()
@@ -233,3 +230,8 @@ class charge_payment(generic.TemplateView):
         else:
             return  HttpResponseRedirect('/login')
 
+
+# Create your tests here.
+# pro=mommy.make('Product',_quantity=3)
+# cat=mommy.make('catagory',_quantity=3)
+# car=mommy.make('Cart',_quantity=3)

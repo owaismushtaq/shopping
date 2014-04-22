@@ -39,7 +39,7 @@
 		<div class="body">
 			<form action="/login_request/" method="post">{% csrf_token %}
 			<input type="submit" value="Login" />
-
+			<input type ="hidden" value="{{ next }}" name= "next">
 			<div class="content">
 				{{ LoginForm }}
 			</div>

@@ -64,7 +64,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'shopping',
         'USER': 'root',
-        'PASSWORD': 'owais',
+        'PASSWORD': 'root',
     }
 }
 
@@ -87,4 +87,4 @@ USE_TZ = True
 MEDIA_URL = '/'
 MEDIA_ROOT = os.path.join(BASE_DIR)
 STATIC_URL = '/static/'
-
+LOGIN_URL = '/login'
